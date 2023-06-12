@@ -33,6 +33,11 @@
                     @enderror
                 </div>
 
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="change_password" onchange="togglePasswordFields(this)">
+                    <label class="form-check-label" for="change_password">Change Password</label>
+                </div>
+
                 <div class="form-group">
                     <label for="password">Password:</label>
                     <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password">
@@ -42,8 +47,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="confirm_password">New Password:</label>
-                    <input type="password" class="form-control" name="new_password" id="new_password" placeholder="Confirm your password">
+                    <label for="new_password">New Password:</label>
+                    <input type="password" class="form-control" name="new_password" id="new_password" placeholder="Confirm your password" disabled>
                     @error('new_password')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -51,7 +56,7 @@
 
                 <div class="form-group">
                     <label for="confirm_password">Confirm Password:</label>
-                    <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Enter your new password">
+                    <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Enter your new password" disabled>
                     @error('confirm_password')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -63,6 +68,15 @@
 
         <!-- Add Bootstrap JS (optional, if you need JavaScript features) -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script>
+            function togglePasswordFields(checkbox) {
+                var newPasswordField = document.getElementById('new_password');
+                var confirmPasswordField = document.getElementById('confirm_password');
+
+                newPasswordField.disabled = !checkbox.checked;
+                confirmPasswordField.disabled = !checkbox.checked;
+            }
+        </script>
     </body>
     </html>
 @endsection
