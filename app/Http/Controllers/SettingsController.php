@@ -34,6 +34,7 @@ class SettingsController extends Controller
     
     $user = $this->getUser();
     // Update the user's name
+    
     $user->name = $request->input('name');
 
     // Update the user's email
@@ -46,6 +47,11 @@ class SettingsController extends Controller
 
     // Save the updated user
     $user->save();
+
+    $preferenceIds = $request->input('preferences');
+
+    // Associate the preferences with the user
+    $user->preferences()->attach($preferenceIds);
 
     return redirect()->back()->with('success', 'Settings updated successfully.');
 }
