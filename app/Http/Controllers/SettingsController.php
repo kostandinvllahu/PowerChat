@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\PreferenceList;
 use App\Http\Requests\SettingsRequest;
 
 class SettingsController extends Controller
@@ -24,7 +25,8 @@ class SettingsController extends Controller
     {
         $user = $this->getUser();
         $settings = User::where('id',$user->id)->first();
-        return view('settings.index', compact('settings'));
+        $preferences = PreferenceList::all();
+        return view('settings.index', compact('settings','preferences'));
     }
     
     public function update(SettingsRequest $request)

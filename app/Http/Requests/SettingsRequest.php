@@ -58,5 +58,4 @@ class SettingsRequest extends FormRequest
      * @param  \Illuminate\Validation\Validator  $validator
      * @return void
      */
-
 }
