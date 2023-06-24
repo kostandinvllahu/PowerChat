@@ -61,28 +61,33 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Option</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($preferences as $preference)
+
+    <div class="form-group">
+        <label>Preferences:</label>
+    <div style="overflow: auto; max-height: 300px;">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td class="align-middle">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="preference{{ $preference->id }}" name="preferences[]" value="{{ $preference->id }}" {{ in_array($preference->id, $userPreferences->toArray()) ? 'checked' : '' }}>
-                        </div>
-                    </td>
-                    <td class="align-middle">{{ $preference->name }}</td>
+                    <th>Option</th>
+                    <th>Description</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach($preferences as $preference)
+                    <tr>
+                        <td class="align-middle">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="preference{{ $preference->id }}" name="preferences[]" value="{{ $preference->id }}" {{ in_array($preference->id, $userPreferences->toArray()) ? 'checked' : '' }}>
+                            </div>
+                        </td>
+                        <td class="align-middle">{{ $preference->name }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
+
 
                 
 @if ($errors->any())
