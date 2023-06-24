@@ -36,11 +36,12 @@
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="change_password" onchange="togglePasswordFields(this)">
                     <label class="form-check-label" for="change_password">Change Password</label>
-                </div>
+                </div> 
+                
 
                 <div class="form-group">
                     <label for="password">Password:</label>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password">
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password" disabled>
                     @error('password')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -70,9 +71,11 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
         <script>
             function togglePasswordFields(checkbox) {
+                var passwordField = document.getElementById('password');
                 var newPasswordField = document.getElementById('new_password');
                 var confirmPasswordField = document.getElementById('confirm_password');
 
+                passwordField.disabled = !checkbox.checked;
                 newPasswordField.disabled = !checkbox.checked;
                 confirmPasswordField.disabled = !checkbox.checked;
             }
