@@ -74,7 +74,7 @@
                 <tr>
                     <td class="align-middle">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="preference{{ $preference->id }}" name="preferences[]" value="{{ $preference->id }}">
+                            <input type="checkbox" class="form-check-input" id="preference{{ $preference->id }}" name="preferences[]" value="{{ $preference->id }}" {{ in_array($preference->id, $userPreferences->toArray()) ? 'checked' : '' }}>
                         </div>
                     </td>
                     <td class="align-middle">{{ $preference->name }}</td>
@@ -83,6 +83,8 @@
         </tbody>
     </table>
 </div>
+
+                
 @if ($errors->any())
     <div class="alert alert-danger">
         <ul>
