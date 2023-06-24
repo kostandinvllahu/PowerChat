@@ -28,6 +28,7 @@ class SettingsRequest extends FormRequest
         $rules = [
             'name' => 'required|string',
             'email' => 'required|email',
+            'preferences.*' => 'exists:preference_lists,id',
         ];
 
         // Only validate the password, new_password, and confirm_password fields if the checkbox is checked
@@ -58,5 +59,4 @@ class SettingsRequest extends FormRequest
      * @param  \Illuminate\Validation\Validator  $validator
      * @return void
      */
-
 }

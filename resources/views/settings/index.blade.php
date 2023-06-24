@@ -4,7 +4,6 @@
     <!DOCTYPE html>
     <html>
     <head>
-        <!-- Add Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     </head>
     <body>
@@ -37,7 +36,6 @@
                     <input type="checkbox" class="form-check-input" id="change_password" onchange="togglePasswordFields(this)">
                     <label class="form-check-label" for="change_password">Change Password</label>
                 </div> 
-                
 
                 <div class="form-group">
                     <label for="password">Password:</label>
@@ -63,11 +61,49 @@
                     @enderror
                 </div>
 
+
+    <div class="form-group">
+        <label>Preferences:</label>
+    <div style="overflow: auto; max-height: 300px;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($preferences as $preference)
+                    <tr>
+                        <td class="align-middle">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="preference{{ $preference->id }}" name="preferences[]" value="{{ $preference->id }}" {{ in_array($preference->id, $userPreferences->toArray()) ? 'checked' : '' }}>
+                            </div>
+                        </td>
+                        <td class="align-middle">{{ $preference->name }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+                
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+                
                 <button type="submit" class="btn btn-primary">Save</button>
             </form>
         </div>
 
-        <!-- Add Bootstrap JS (optional, if you need JavaScript features) -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
         <script>
             function togglePasswordFields(checkbox) {
