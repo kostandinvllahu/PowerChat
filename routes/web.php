@@ -25,6 +25,8 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::resource('settings', SettingsController::class);
 Route::resource('searchFriends', SearchFriendsController::class);
+//Route::get('searchFriends/show', [SearchFriendsController::class, 'show'])->name('searchFriends.show');
+
 
 
 
