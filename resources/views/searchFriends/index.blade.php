@@ -39,6 +39,7 @@
 
                 </tbody>
             </table>
+            <input type="hidden" name="searchTerm" value="{{ $searchTerm }}">
             <button type="submit" class="btn btn-primary">Save Selected</button>
         </form>
     </div>
@@ -70,31 +71,40 @@
         });
 
         $(document).ready(function() {
-            // Add event listener to the checkboxes
-            $('input[type="checkbox"]').on('change', function() {
-                var friendId = $(this).val();
-                var isChecked = $(this).is(':checked');
+            // Add event listener to the second form submit button
+            $('form[action="{{ route("searchFriends.store") }}"]').submit(function() {
+                var searchTerm = $('input[name="searchTerm"]').attr('value');
 
-                // Send AJAX request to save the friend ID
-                $.ajax({
-                    url: "{{ route('searchFriends.store') }}",
-                    type: "POST",
-                    data: {
-                        friendId: friendId,
-                        isChecked: isChecked
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        console.log(response);
-                    },
-                    error: function(xhr, status, error) {
-                        console.log(error);
-                    }
-                });
+                // if (searchTerm.trim() === '') {
+                //     alert('Please enter a search term before saving.');
+                //     return false; // Prevent form submission
+                // }
             });
-        });
 
+            // Add event listener to the checkboxes
+            // $('input[type="checkbox"]').on('change', function() {
+            //     var friendId = $(this).val();
+            //     var isChecked = $(this).is(':checked');
+
+            //     // Send AJAX request to save the friend ID
+            //     $.ajax({
+            //         url: "{{ route('searchFriends.store') }}",
+            //         type: "POST",
+            //         data: {
+            //             friendId: friendId,
+            //             isChecked: isChecked
+            //         },
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //         },
+            //         success: function(response) {
+            //             console.log(response);
+            //         },
+            //         error: function(xhr, status, error) {
+            //             console.log(error);
+            //         }
+            //     });
+            // });
+        });
     </script>
 @endsection

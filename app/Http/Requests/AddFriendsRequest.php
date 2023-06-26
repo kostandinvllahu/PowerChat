@@ -23,6 +23,7 @@ class AddFriendsRequest extends FormRequest
     {
         $rules = [
             'friendsId.*' => 'integer|exists:users,id',
+            'search' => 'string',
         ];
 
         return $rules;
