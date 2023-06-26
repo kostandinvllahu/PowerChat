@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddFriendsRequest;
+use App\Models\Friend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -9,11 +11,6 @@ use App\Models\Preference;
 
 class SearchFriendsController extends Controller
 {
-    public function getUser()
-    {
-        return Auth::user();
-    }
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -21,32 +18,49 @@ class SearchFriendsController extends Controller
 
     public function index(Request $request)
     {
-        $user = $this->getUser();
+        $user = Auth::user();
         $userPreferences = Preference::where('userId', $user->id)->pluck('preference_id');
 
         $similarUserIds = Preference::whereIn('preference_id', $userPreferences)
             ->where('userId', '!=', $user->id)
             ->pluck('userId');
 
-        $searchTerm = $request->input('search', ''); // Get the search term from the request, default to an empty string if not provided
+        $searchTerm = $request->input('search', '');
 
-        if(!$searchTerm){
-        $userNames = User::whereIn('id', $similarUserIds)
-            ->where('name', 'like', '%' . $searchTerm . '%')
-            ->pluck('name');
+        if ($searchTerm) {
+            $users = User::where('name', 'like', '%' . $searchTerm . '%')
+                ->where('id', '!=', $user->id)
+                ->get();
         } else {
-            $userNames = User::where('name', 'like', '%' . $searchTerm . '%') ->where('id', '!=', $user->id)->pluck('name');
+            $users = User::whereIn('id', $similarUserIds)->get();
         }
 
+        $friendsList = Friend::where('status', Friend::PENDING)
+            ->where('userId',$user->id)
+            ->get();
+
         return view('searchFriends.index', [
-            'similarUserIds' => $similarUserIds,
-            'userNames' => $userNames,
-            'searchTerm' => $searchTerm, // Pass the search term to the view
+            'users' => $users,
+            'friendsList' => $friendsList,
+            'searchTerm' => $searchTerm,
         ]);
     }
 
-    public function show(Request $request)
+    public function store(AddFriendsRequest $request)
     {
-        // Handle the show functionality here if needed
+        $userId = Auth::id();
+        $friendIds = $request->input('friendsIds', []);
+
+        Friend::where('userId',$userId)->delete();
+
+        foreach ($friendIds as $friendId) {
+            Friend::create([
+                'userId' => $userId,
+                'friendsId' => $friendId,
+                'status' => Friend::PENDING,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Selected friends saved successfully.');
     }
 }

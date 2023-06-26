@@ -12,25 +12,41 @@
 
         <br>
 
-        <table class="table">
-            <thead>
+        <form method="POST" action="{{ route('searchFriends.store') }}">
+            @csrf
+            <table class="table">
+                <thead>
                 <tr>
                     <th>Option</th>
                     <th>Name</th>
+                    <th>Status</th>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach ($userNames as $userId => $userName)
+                </thead>
+                <tbody>
+                @foreach ($users as $user)
                     <tr>
-                        <td><input type="checkbox" id="option{{ $userId }}"></td>
-                        <td>{{ $userName }}</td>
+                        <td>
+                            <input type="checkbox" id="option{{ $user->id }}" name="friendsIds[]" value="{{ $user->id }}" @if($friendsList->pluck('friendsId')->contains($user->id)) checked @endif>
+                        </td>
+                        <td>{{ $user->name }}</td>
+                        <td>
+                            @if($friendsList->pluck('friendsId')->contains($user->id))
+                                {{ implode(', ', $friendsList->where('friendsId', $user->id)->pluck('status')->toArray()) }}
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
-            </tbody>
-        </table>
+
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Save Selected</button>
+        </form>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
     <script>
         // Add event listener to the search input
         var searchInput = document.querySelector('input[name="search"]');
@@ -52,5 +68,33 @@
                 }
             }
         });
+
+        $(document).ready(function() {
+            // Add event listener to the checkboxes
+            $('input[type="checkbox"]').on('change', function() {
+                var friendId = $(this).val();
+                var isChecked = $(this).is(':checked');
+
+                // Send AJAX request to save the friend ID
+                $.ajax({
+                    url: "{{ route('searchFriends.store') }}",
+                    type: "POST",
+                    data: {
+                        friendId: friendId,
+                        isChecked: isChecked
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+
     </script>
 @endsection
