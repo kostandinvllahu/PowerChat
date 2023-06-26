@@ -53,6 +53,11 @@ class SearchFriendsController extends Controller
 
         Friend::where('userId',$userId)->delete();
 
+        /*
+         * perdor if query string nuk eshte null te kapi
+         * te gjitha ID dhe nese ekziston ta fshij perndryshe ta shtoj
+         * */
+
         foreach ($friendIds as $friendId) {
             Friend::create([
                 'userId' => $userId,
