@@ -26,7 +26,11 @@
                 @foreach ($users as $user)
                     <tr>
                         <td>
-                            <input type="checkbox" id="option{{ $user->id }}" name="friendsIds[]" value="{{ $user->id }}" @if($friendsList->pluck('friendsId')->contains($user->id)) checked @endif>
+                            @if($friendsList->pluck('friendsId')->contains($user->id))
+                                <button type="button" class="btn btn-danger remove-friend" data-friend-id="{{ $user->id }}">Remove</button>
+                            @else
+                                <input type="checkbox" class="friend-checkbox" id="option{{ $user->id }}" name="friendsIds[]" value="{{ $user->id }}">
+                            @endif
                         </td>
                         <td>{{ $user->name }}</td>
                         <td>
@@ -51,6 +55,7 @@
     <script>
         // Add event listener to the search input
         var searchInput = document.querySelector('input[name="search"]');
+
         searchInput.addEventListener('input', function() {
             var searchTerm = searchInput.value.toLowerCase();
             var table = document.querySelector('table');
@@ -71,40 +76,32 @@
         });
 
         $(document).ready(function() {
-            // Add event listener to the second form submit button
-            $('form[action="{{ route("searchFriends.store") }}"]').submit(function() {
-                var searchTerm = $('input[name="searchTerm"]').attr('value');
+            $('.remove-friend').on('click', function() {
+                var friendId = $(this).data('friend-id');
 
-                // if (searchTerm.trim() === '') {
-                //     alert('Please enter a search term before saving.');
-                //     return false; // Prevent form submission
-                // }
+                // Confirmation dialog
+                if (confirm('Are you sure you want to remove this friend?')) {
+                    // Send the DELETE request
+                    $.ajax({
+                        url: "{{ route('searchFriends.destroy', '') }}/" + friendId,
+                        type: "POST",
+                        data: {
+                            _method: "DELETE",
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            // Handle success response
+                            console.log(response);
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error response
+                            console.log(error);
+                        }
+                    });
+                }
             });
-
-            // Add event listener to the checkboxes
-            // $('input[type="checkbox"]').on('change', function() {
-            //     var friendId = $(this).val();
-            //     var isChecked = $(this).is(':checked');
-
-            //     // Send AJAX request to save the friend ID
-            //     $.ajax({
-            //         url: "{{ route('searchFriends.store') }}",
-            //         type: "POST",
-            //         data: {
-            //             friendId: friendId,
-            //             isChecked: isChecked
-            //         },
-            //         headers: {
-            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            //         },
-            //         success: function(response) {
-            //             console.log(response);
-            //         },
-            //         error: function(xhr, status, error) {
-            //             console.log(error);
-            //         }
-            //     });
-            // });
         });
+
     </script>
 @endsection

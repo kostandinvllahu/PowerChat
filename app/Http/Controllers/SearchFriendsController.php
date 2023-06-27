@@ -93,4 +93,16 @@ class SearchFriendsController extends Controller
         return redirect()->back()->with('success', 'Selected friends saved successfully.');
     }
 
+    public function destroy($friendId)
+    {
+        $userId = Auth::id();
+
+        Friend::where('userId', $userId)
+            ->where('friendsId', $friendId)
+            ->delete();
+
+        return redirect()->back()->with('success', 'Friend removed successfully.');
+    }
+
+
 }
