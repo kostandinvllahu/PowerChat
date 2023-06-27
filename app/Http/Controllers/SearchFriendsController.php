@@ -51,9 +51,9 @@ class SearchFriendsController extends Controller
         $userId = Auth::id();
 
         $friendIds = $request->input('friendsIds', []);
-    
+
         $searchTerm = $request->input('searchTerm', '');
-    
+
         $totalFriendsIds = Friend::where('userId', $userId)->pluck('friendsId');
 
        if (!empty($searchTerm)) {
@@ -62,7 +62,7 @@ class SearchFriendsController extends Controller
 
             // Merge the two arrays and remove duplicates
           $totalArray = array_unique(array_merge($totalFriendsIds, $friendIds));
-            
+
           Friend::where('userId', $userId)->delete();
 
             foreach ($totalArray as $friendId) {
@@ -71,19 +71,18 @@ class SearchFriendsController extends Controller
                     'friendsId' => $friendId,
                     'status' => Friend::PENDING,
                 ]);
-            }            
+            }
          } else {
-        
+
             $totalFriendsIds = $totalFriendsIds->toArray(); // Convert collection to array
             $friendIds = $friendIds; // Assuming it's already an array
 
             // Merge the two arrays and remove duplicates
             $totalArray = array_unique(array_merge($totalFriendsIds, $friendIds));
 
-            //dd($totalArray);
             Friend::where('userId', $userId)->delete();
 
-            foreach ($friendIds as $friendId) {
+            foreach ($totalArray as $friendId) {
                 Friend::create([
                     'userId' => $userId,
                     'friendsId' => $friendId,
@@ -93,5 +92,5 @@ class SearchFriendsController extends Controller
     }
         return redirect()->back()->with('success', 'Selected friends saved successfully.');
     }
-    
+
 }
