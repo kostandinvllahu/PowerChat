@@ -35,9 +35,9 @@ class SearchFriendsController extends Controller
             $users = User::whereIn('id', $similarUserIds)->get();
         }
 
-        $friendsList = Friend::where('status', Friend::PENDING)
-            ->where('userId',$user->id)
-            ->get();
+        $friendsList = Friend::whereIn('status', [Friend::PENDING, Friend::ACCEPTED])
+             ->where('userId', $user->id)->get();
+
 
         return view('searchFriends.index', [
             'users' => $users,

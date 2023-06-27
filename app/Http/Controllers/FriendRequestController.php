@@ -28,16 +28,26 @@ class FriendRequestController extends Controller
     }
 
     public function update(Request $request, $friendId)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        /*
-         * fix the problem to update values
-         * */
-        Friend::where('userId',$friendId)->
-            where('userId',$user->id)
-            ->set('status',Friend::ACCEPTED);
+    $query = Friend::where('userId', $friendId)
+        ->where('friendsId', $user->id);
 
-        return redirect()->back()->with('success', 'Friends accepted successfully.');
-    }
+    // Retrieve the generated SQL query
+    $sql = $query->toSql();
+
+    // Execute the update
+    $query->update(['status' => Friend::ACCEPTED]);
+
+    Friend::create([
+        'userId' => $user->id,
+        'friendsId' => $friendId,
+        'status' => Friend::ACCEPTED,
+    ]);
+
+    return redirect()->back()->with('success', 'Friends accepted successfully.');
+}
+
+
 }
