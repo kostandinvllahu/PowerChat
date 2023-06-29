@@ -30,13 +30,13 @@ class SearchFriendsController extends Controller
         if ($searchTerm) {
             $users = User::where('name', 'like', '%' . $searchTerm . '%')
                 ->where('id', '!=', $user->id)
-                ->get();
+                ->get();  /*TE PERDORET JOIN QUERY KETU*/
         } else {
-            $users = User::whereIn('id', $similarUserIds)->get();
+            $users = User::whereIn('id', $similarUserIds)->get(); /*TE PERDORET JOIN QUERY KETU*/
         }
 
         $friendsList = Friend::whereIn('status', [Friend::PENDING, Friend::ACCEPTED])
-             ->where('userId', $user->id)->get();
+            ->where('userId', $user->id)->get();
 
 
         return view('searchFriends.index', [
@@ -56,14 +56,14 @@ class SearchFriendsController extends Controller
 
         $totalFriendsIds = Friend::where('userId', $userId)->pluck('friendsId');
 
-       if (!empty($searchTerm)) {
-         $totalFriendsIds = $totalFriendsIds->toArray(); // Convert collection to array
-         $friendIds = $friendIds; // Assuming it's already an array
+        if (!empty($searchTerm)) {
+            $totalFriendsIds = $totalFriendsIds->toArray(); // Convert collection to array
+            $friendIds = $friendIds; // Assuming it's already an array
 
             // Merge the two arrays and remove duplicates
-          $totalArray = array_unique(array_merge($totalFriendsIds, $friendIds));
+            $totalArray = array_unique(array_merge($totalFriendsIds, $friendIds));
 
-          Friend::where('userId', $userId)->delete();
+            Friend::where('userId', $userId)->delete();
 
             foreach ($totalArray as $friendId) {
                 Friend::create([
@@ -72,7 +72,7 @@ class SearchFriendsController extends Controller
                     'status' => Friend::PENDING,
                 ]);
             }
-         } else {
+        } else {
 
             $totalFriendsIds = $totalFriendsIds->toArray(); // Convert collection to array
             $friendIds = $friendIds; // Assuming it's already an array
@@ -88,8 +88,8 @@ class SearchFriendsController extends Controller
                     'friendsId' => $friendId,
                     'status' => Friend::PENDING,
                 ]);
-         }
-    }
+            }
+        }
         return redirect()->back()->with('success', 'Selected friends saved successfully.');
     }
 
