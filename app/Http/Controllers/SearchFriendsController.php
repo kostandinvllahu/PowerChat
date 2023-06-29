@@ -28,16 +28,34 @@ class SearchFriendsController extends Controller
         $searchTerm = $request->input('search', '');
 
         if ($searchTerm) {
+
+            $blockedUserIds = Friend::where('friendsId', $user->id)
+            ->whereIn('status', [Friend::BLOCKER, Friend::BLOCKED])
+                ->pluck('userId');
+
             $users = User::where('name', 'like', '%' . $searchTerm . '%')
-                ->where('id', '!=', $user->id)
-                ->get();  /*TE PERDORET JOIN QUERY KETU*/
+                ->whereNotIn('id', $blockedUserIds)
+                ->get();
+
         } else {
-            $users = User::whereIn('id', $similarUserIds)->get(); /*TE PERDORET JOIN QUERY KETU*/
+            $blockedUserIds = Friend::where('friendsId', $user->id)
+                ->whereIn('status', [Friend::BLOCKER, Friend::BLOCKED])
+                ->pluck('userId');
+
+            $users = User::whereIn('id', $similarUserIds)
+                ->whereNotIn('id', $blockedUserIds)
+                ->get();
         }
 
-        $friendsList = Friend::whereIn('status', [Friend::PENDING, Friend::ACCEPTED])
-            ->where('userId', $user->id)->get();
+        $friendsList = Friend::where('userId', $user->id)
+            ->get();
 
+        //dd($friendsList);
+
+        /*
+         * KUR SHTON NJE SHOK DHE PRANOHET BEJE QE TE
+         * DYJA VLERAT TE BEHEN ACCEPTED!
+         * */
 
         return view('searchFriends.index', [
             'users' => $users,
@@ -45,6 +63,9 @@ class SearchFriendsController extends Controller
             'searchTerm' => $searchTerm,
         ]);
     }
+
+
+
 
     public function store(AddFriendsRequest $request)
     {
