@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Search and Table Example</h1>
+        <h1>Search Friends With Similar Preferences</h1>
 
         <form method="GET" action="{{ route('searchFriends.index') }}">
             <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ $searchTerm }}">
