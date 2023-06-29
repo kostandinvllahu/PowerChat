@@ -18,4 +18,5 @@ class Friend extends Model
     const PENDING = 'PENDING';
     const ACCEPTED = 'ACCEPTED';
     const BLOCKED = 'BLOCKED';
+    const REJECTED = 'REJECTED';
 }

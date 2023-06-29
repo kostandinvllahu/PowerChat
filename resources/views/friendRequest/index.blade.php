@@ -29,17 +29,20 @@
                                         <form method="POST" action="{{ route('friendRequest.update', $friend->userId) }}" class="d-inline">
                                             @csrf
                                             @method('PUT')
+                                            <input type="hidden" name="value" value="1">
                                             <button type="submit" class="btn btn-primary mr-2">ACCEPT</button>
                                         </form>
                                         <form method="POST" action="{{ route('friendRequest.update', $friend->userId) }}" class="d-inline">
                                             @csrf
-                                            @method('DELETE')
+                                            @method('PUT')
+                                            <input type="hidden" name="value" value="2">
                                             <button type="submit" class="btn btn-danger">CANCEL</button>
                                         </form>
                                     @elseif($friend->status == \App\Models\Friend::ACCEPTED)
                                         <form method="POST" action="{{ route('friendRequest.update', $friend->userId) }}" class="d-inline">
                                             @csrf
-                                            @method('PATCH')
+                                            @method('PUT')
+                                            <input type="hidden" name="value" value="3">
                                             <button type="submit" class="btn btn-danger">BLOCK</button>
                                         </form>
                                     @endif
