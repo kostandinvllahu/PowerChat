@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Friends & Friends Request</h1>
+        <h1>Search and Table Example</h1>
 
         <form method="GET" action="{{ route('friendRequest.index') }}">
             <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ $searchTerm }}">
@@ -24,26 +24,27 @@
                     <tr>
                         <td>
                             @foreach($userFriends as $friend)
-                                @if($friend->userId == $user->id)
-                                    @if($friend->status == \App\Models\Friend::PENDING)
-                                        <form method="POST" action="{{ route('friendRequest.update', $friend->userId) }}" class="d-inline">
-                                            @csrf
-                                            @method('PUT')
-                                            <button type="submit" class="btn btn-primary mr-2">ACCEPT</button>
-                                        </form>
-                                        <form method="POST" action="{{ route('friendRequest.update', $friend->userId) }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">CANCEL</button>
-                                        </form>
-                                    @elseif($friend->status == \App\Models\Friend::ACCEPTED)
-                                        <form method="POST" action="{{ route('friendRequest.update', $friend->userId) }}" class="d-inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="btn btn-danger">BLOCK</button>
-                                        </form>
-                                    @endif
-                                @endif
+                            @if($friend->userId == $user->id)
+                            @if($friend->status == \App\Models\Friend::PENDING)
+                                <form method="POST" action="{{ route('friendRequest.update', [$friend->userId, '1']) }}" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-primary mr-2">ACCEPT</button>
+                                </form>
+                                <form method="POST" action="{{ route('friendRequest.update', [$friend->userId, '2']) }}" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-danger">CANCEL</button>
+                                </form>
+                            @elseif($friend->status == \App\Models\Friend::ACCEPTED)
+                                <form method="POST" action="{{ route('friendRequest.update', [$friend->userId, '3']) }}" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-danger">BLOCK</button>
+                                </form>
+                            @endif
+                        @endif
+                        
                             @endforeach
                         </td>
                         <td>{{ $user->name }}</td>
