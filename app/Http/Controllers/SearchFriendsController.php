@@ -28,16 +28,34 @@ class SearchFriendsController extends Controller
         $searchTerm = $request->input('search', '');
 
         if ($searchTerm) {
+
+            $blockedUserIds = Friend::where('friendsId', $user->id)
+            ->whereIn('status', [Friend::BLOCKER, Friend::BLOCKED])
+                ->pluck('userId');
+
             $users = User::where('name', 'like', '%' . $searchTerm . '%')
-                ->where('id', '!=', $user->id)
+                ->whereNotIn('id', $blockedUserIds)
                 ->get();
+
         } else {
-            $users = User::whereIn('id', $similarUserIds)->get();
+            $blockedUserIds = Friend::where('friendsId', $user->id)
+                ->whereIn('status', [Friend::BLOCKER, Friend::BLOCKED])
+                ->pluck('userId');
+
+            $users = User::whereIn('id', $similarUserIds)
+                ->whereNotIn('id', $blockedUserIds)
+                ->get();
         }
 
-        $friendsList = Friend::whereIn('status', [Friend::PENDING, Friend::ACCEPTED])
-             ->where('userId', $user->id)->get();
+        $friendsList = Friend::where('userId', $user->id)
+            ->get();
 
+        //dd($friendsList);
+
+        /*
+         * KUR SHTON NJE SHOK DHE PRANOHET BEJE QE TE
+         * DYJA VLERAT TE BEHEN ACCEPTED!
+         * */
 
         return view('searchFriends.index', [
             'users' => $users,
@@ -45,6 +63,9 @@ class SearchFriendsController extends Controller
             'searchTerm' => $searchTerm,
         ]);
     }
+
+
+
 
     public function store(AddFriendsRequest $request)
     {
@@ -56,14 +77,14 @@ class SearchFriendsController extends Controller
 
         $totalFriendsIds = Friend::where('userId', $userId)->pluck('friendsId');
 
-       if (!empty($searchTerm)) {
-         $totalFriendsIds = $totalFriendsIds->toArray(); // Convert collection to array
-         $friendIds = $friendIds; // Assuming it's already an array
+        if (!empty($searchTerm)) {
+            $totalFriendsIds = $totalFriendsIds->toArray(); // Convert collection to array
+            $friendIds = $friendIds; // Assuming it's already an array
 
             // Merge the two arrays and remove duplicates
-          $totalArray = array_unique(array_merge($totalFriendsIds, $friendIds));
+            $totalArray = array_unique(array_merge($totalFriendsIds, $friendIds));
 
-          Friend::where('userId', $userId)->delete();
+            Friend::where('userId', $userId)->delete();
 
             foreach ($totalArray as $friendId) {
                 
@@ -73,7 +94,7 @@ class SearchFriendsController extends Controller
                     'status' => Friend::PENDING,
                 ]);
             }
-         } else {
+        } else {
 
             $totalFriendsIds = $totalFriendsIds->toArray(); // Convert collection to array
             $friendIds = $friendIds; // Assuming it's already an array
@@ -89,8 +110,8 @@ class SearchFriendsController extends Controller
                     'friendsId' => $friendId,
                     'status' => Friend::PENDING,
                 ]);
-         }
-    }
+            }
+        }
         return redirect()->back()->with('success', 'Selected friends saved successfully.');
     }
 

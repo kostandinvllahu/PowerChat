@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Search and Table Example</h1>
+        <h1>Search Friends With Similar Preferences</h1>
 
         <form method="GET" action="{{ route('searchFriends.index') }}">
             <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ $searchTerm }}">
@@ -27,7 +27,18 @@
                     <tr>
                         <td>
                             @if($friendsList->pluck('friendsId')->contains($user->id))
-                                <button type="button" class="btn btn-danger remove-friend" data-friend-id="{{ $user->id }}">Remove</button>
+                                @php
+                                    $friend = $friendsList->where('friendsId', $user->id)->first();
+                                @endphp
+                                @if($friend->status === 'BLOCKED')
+                                    <form method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success">Unblock</button>
+                                    </form>
+                                @else
+                                    <button type="button" class="btn btn-danger remove-friend" data-friend-id="{{ $user->id }}">Remove</button>
+                                @endif
                             @else
                                 <input type="checkbox" class="friend-checkbox" id="option{{ $user->id }}" name="friendsIds[]" value="{{ $user->id }}">
                             @endif

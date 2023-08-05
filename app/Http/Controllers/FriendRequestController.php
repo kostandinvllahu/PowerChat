@@ -16,46 +16,48 @@ class FriendRequestController extends Controller
     }
 
     public function index(Request $request)
-{
-    $user = Auth::user();
-    
-    $searchTerm = $request->input('search', '');
-    $users = [];
+    {
+        $user = Auth::user();
 
-    if ($searchTerm) {
-        $userIds = User::where('name', 'like', '%' . $searchTerm . '%')
-            ->where('id', '!=', $user->id)
-            ->pluck('id');
+        $searchTerm = $request->input('search', '');
 
-        $userFriends = Friend::whereIn('userId', $userIds)
-            ->where('friendsId', $user->id)
-            ->get();
+        if ($searchTerm) {
+            $userIds = User::where('name', 'like', '%' . $searchTerm . '%')
+                ->where('id', '!=', $user->id)
+                ->pluck('id');
 
-        $users = User::whereIn('id', $userFriends->pluck('userId'))->get();
-    } else {
-        $userFriends = Friend::where('friendsId', $user->id)->get();
-        $users = User::whereIn('id', $userFriends->pluck('userId'))->get();
+            $userFriends = Friend::whereIn('userId', $userIds)
+                ->where('friendsId', $user->id)
+                ->whereNotIn('status', [Friend::REJECTED, Friend::BLOCKED, Friend::BLOCKER])
+                ->get();
+
+            $users = User::whereIn('id', $userFriends->pluck('userId'))->get();
+        } else {
+            $userFriends = Friend::where('friendsId', $user->id)
+                ->whereNotIn('status', [Friend::REJECTED, Friend::BLOCKED, Friend::BLOCKER])
+                ->get();
+
+            $users = User::whereIn('id', $userFriends->pluck('userId'))->get();
+        }
+
+        return view('friendRequest.index', [
+            'users' => $users,
+            'userFriends' => $userFriends,
+            'searchTerm' => $searchTerm,
+        ]);
     }
-
-    return view('friendRequest.index', [
-        'users' => $users,
-        'userFriends' => $userFriends,
-        'searchTerm' => $searchTerm,
-    ]);
-}
-
 
     public function update(Request $request, $friendId, $option)
     {
-      
-    //dd($option);
     $user = Auth::user();
 
-    $query = Friend::where('userId', $friendId)
-        ->where('friendsId', $user->id);
+        $query = Friend::where('userId', $friendId)
+            ->where('friendsId', $user->id);
+
+    // Retrieve the generated SQL query
+    $sql = $query->toSql();
 
     // Execute the update
-    if($option == '1') {
     $query->update(['status' => Friend::ACCEPTED]);
 
     Friend::create([
@@ -63,20 +65,8 @@ class FriendRequestController extends Controller
         'friendsId' => $friendId,
         'status' => Friend::ACCEPTED,
     ]);
-    $message = 'Friends accepted successfully.';
-}
 
-    if($option == '2') {
-        $query->delete();
-        $message = 'Friend request rejected successfully.';
-    }
-
-    if($option == '3') {
-        $query->delete();
-        $message = 'Friend unfollowed successfully.';
-    }
-
-    return redirect()->back()->with('success', $message);
+    return redirect()->back()->with('success', 'Friends accepted successfully.');
     }   
     
 }
