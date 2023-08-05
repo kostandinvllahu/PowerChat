@@ -15,5 +15,6 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::resource('settings', SettingsController::class);
 Route::resource('friendRequest',FriendRequestController::class);
+Route::put('friendRequest/{friendId}/{option}', [FriendRequestController::class, 'update'])->name('friendRequest.update');
 Route::resource('searchFriends', SearchFriendsController::class);
 

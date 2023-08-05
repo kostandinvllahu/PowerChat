@@ -45,17 +45,17 @@ class FriendRequestController extends Controller
 }
 
 
-    public function update(Request $request, $friendId)
+    public function update(Request $request, $friendId, $option)
     {
+      
+    //dd($option);
     $user = Auth::user();
 
     $query = Friend::where('userId', $friendId)
         ->where('friendsId', $user->id);
 
-    // Retrieve the generated SQL query
-    $sql = $query->toSql();
-
     // Execute the update
+    if($option == '1') {
     $query->update(['status' => Friend::ACCEPTED]);
 
     Friend::create([
@@ -63,8 +63,20 @@ class FriendRequestController extends Controller
         'friendsId' => $friendId,
         'status' => Friend::ACCEPTED,
     ]);
+    $message = 'Friends accepted successfully.';
+}
 
-    return redirect()->back()->with('success', 'Friends accepted successfully.');
+    if($option == '2') {
+        $query->delete();
+        $message = 'Friend request rejected successfully.';
+    }
+
+    if($option == '3') {
+        $query->delete();
+        $message = 'Friend unfollowed successfully.';
+    }
+
+    return redirect()->back()->with('success', $message);
     }   
     
 }

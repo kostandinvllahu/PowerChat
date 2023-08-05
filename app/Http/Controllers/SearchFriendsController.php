@@ -66,6 +66,7 @@ class SearchFriendsController extends Controller
           Friend::where('userId', $userId)->delete();
 
             foreach ($totalArray as $friendId) {
+                
                 Friend::create([
                     'userId' => $userId,
                     'friendsId' => $friendId,
