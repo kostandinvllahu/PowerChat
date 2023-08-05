@@ -4,17 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SearchFriendsController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\FriendRequestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,10 +14,7 @@ Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::resource('settings', SettingsController::class);
+Route::resource('friendRequest',FriendRequestController::class);
+Route::put('friendRequest/{friendId}/{option}', [FriendRequestController::class, 'update'])->name('friendRequest.update');
 Route::resource('searchFriends', SearchFriendsController::class);
 
-
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

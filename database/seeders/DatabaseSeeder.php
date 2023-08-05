@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(AddPreferences::class);
         $this->call(PreferenceSeed::class);
         $this->call(UserSeed::class);
     }

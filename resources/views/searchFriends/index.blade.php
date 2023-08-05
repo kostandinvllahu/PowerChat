@@ -1,71 +1,80 @@
 @extends('layouts.app')
 
 @section('content')
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Search & Connect With People</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        input[type="text"] {
-            padding: 6px;
-            width: 300px;
-        }
-    </style>
-</head>
-<body>
     <div class="container">
-        <h1>Search and Table Example</h1>
+        <h1>Search Friends With Similar Preferences</h1>
 
-        <input type="text" id="search" class="form-control" placeholder="Search...">
+        <form method="GET" action="{{ route('searchFriends.index') }}">
+            <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ $searchTerm }}">
+            <br>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
         <br>
-        <table class="table">
-            <thead>
+
+        <form method="POST" action="{{ route('searchFriends.store') }}">
+            @csrf
+            <table class="table">
+                <thead>
                 <tr>
                     <th>Option</th>
                     <th>Name</th>
+                    <th>Status</th>
                 </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><input type="checkbox" id="option1"></td>
-                    <td>John Doe</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" id="option2"></td>
-                    <td>Jane Smith</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" id="option3"></td>
-                    <td>Mike Johnson</td>
-                </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach ($users as $user)
+                    <tr>
+                        <td>
+                            @if($friendsList->pluck('friendsId')->contains($user->id))
+                                @php
+                                    $friend = $friendsList->where('friendsId', $user->id)->first();
+                                @endphp
+                                @if($friend->status === 'BLOCKED')
+                                    <form method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success">Unblock</button>
+                                    </form>
+                                @else
+                                    <button type="button" class="btn btn-danger remove-friend" data-friend-id="{{ $user->id }}">Remove</button>
+                                @endif
+                            @else
+                                <input type="checkbox" class="friend-checkbox" id="option{{ $user->id }}" name="friendsIds[]" value="{{ $user->id }}">
+                            @endif
+                        </td>
+                        <td>{{ $user->name }}</td>
+                        <td>
+                            @if($friendsList->pluck('friendsId')->contains($user->id))
+                                {{ implode(', ', $friendsList->where('friendsId', $user->id)->pluck('status')->toArray()) }}
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+
+                </tbody>
+            </table>
+            <input type="hidden" name="searchTerm" value="{{ $searchTerm }}">
+            <button type="submit" class="btn btn-primary">Save Selected</button>
+        </form>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
     <script>
         // Add event listener to the search input
-        var searchInput = document.getElementById('search');
+        var searchInput = document.querySelector('input[name="search"]');
+
         searchInput.addEventListener('input', function() {
             var searchTerm = searchInput.value.toLowerCase();
             var table = document.querySelector('table');
             var rows = table.getElementsByTagName('tr');
-            
+
             for (var i = 0; i < rows.length; i++) {
                 var name = rows[i].getElementsByTagName('td')[1];
-                
+
                 if (name) {
                     var textValue = name.textContent || name.innerText;
                     if (textValue.toLowerCase().indexOf(searchTerm) > -1) {
@@ -76,7 +85,34 @@
                 }
             }
         });
+
+        $(document).ready(function() {
+            $('.remove-friend').on('click', function() {
+                var friendId = $(this).data('friend-id');
+
+                // Confirmation dialog
+                if (confirm('Are you sure you want to remove this friend?')) {
+                    // Send the DELETE request
+                    $.ajax({
+                        url: "{{ route('searchFriends.destroy', '') }}/" + friendId,
+                        type: "POST",
+                        data: {
+                            _method: "DELETE",
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            // Handle success response
+                            console.log(response);
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error response
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+        });
+
     </script>
-</body>
-</html>
 @endsection
