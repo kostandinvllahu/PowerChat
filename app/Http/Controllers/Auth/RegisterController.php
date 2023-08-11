@@ -85,7 +85,9 @@ class RegisterController extends Controller
                 'status' => 'ACTIVE',
             ]);
     
-            $baseUrl = env('APP_URL') . 'api/reset-password/' . $token;
+            //$baseUrl = env('APP_URL') . 'api/reset-password/' . $token;
+
+            $baseUrl = env('APP_URL') . '/verify-account/' . $token;
 
             $template = 'Welcome ' . $createAccount->name . ' please verify your account so you can log in and start connecting with people! /*Linku*/';
     
@@ -97,7 +99,7 @@ class RegisterController extends Controller
     
             SendMailAccountVerificationJob::dispatch($provider, $subject, $body);
     
-            auth()->login($createAccount); // Log the user in
+            //auth()->login($createAccount); // Log the user in
     
             return $createAccount;
         } catch (Exception $e) {

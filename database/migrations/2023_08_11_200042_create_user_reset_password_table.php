@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_verification_tokens', function (Blueprint $table) {
+        Schema::create('user_reset_passwords', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
             $table->longText('token');
+            $table->timestamp('expires_at')->default(\Carbon\Carbon::now()->addHour());
             $table->string('status');
             $table->timestamps();
         });
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_verification_tokens');
+        Schema::dropIfExists('user_reset_passwords');
     }
 };
