@@ -20,3 +20,4 @@ Route::put('friendRequest/{friendId}/{option}', [FriendRequestController::class,
 Route::resource('searchFriends', SearchFriendsController::class);
 Route::get('verify-account/{tokenId}',[LoginController::class,'verifyAccount']);
 
+

@@ -64,9 +64,6 @@ class SearchFriendsController extends Controller
         ]);
     }
 
-
-
-
     public function store(AddFriendsRequest $request)
     {
         $userId = Auth::id();
