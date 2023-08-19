@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ChatRoomController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SettingsController;
@@ -19,5 +20,6 @@ Route::resource('friendRequest',FriendRequestController::class);
 Route::put('friendRequest/{friendId}/{option}', [FriendRequestController::class, 'update'])->name('friendRequest.update');
 Route::resource('searchFriends', SearchFriendsController::class);
 Route::get('verify-account/{tokenId}',[LoginController::class,'verifyAccount']);
+Route::resource('chatroom', ChatRoomController::class);
 
 
